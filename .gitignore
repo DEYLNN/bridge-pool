@@ -1,0 +1,4 @@
+/node_modules
+.env
+/src/wallets.json
+wallets_admin.json
