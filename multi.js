@@ -178,7 +178,7 @@ async function workerLoop(workerId) {
 }
 
 // Jalankan worker paralel (misal 2, bisa dinaikkan sesuai pool)
-const NUM_WORKER = 2;
+const NUM_WORKER = 10;
 
 (async () => {
   await Promise.all(
