@@ -69,6 +69,11 @@ async function emergencySendFee(toAddress, minAmountEth) {
 
 // Main worker loop
 async function workerLoop(workerId) {
+  // Jeda random antara 0–10 detik di awal
+  const startDelay = Math.floor(Math.random() * 10_000);
+  logger.info(`[Worker${workerId}] Mulai dengan jeda awal ${startDelay / 1000}s`);
+  await delay(startDelay);
+
   while (true) {
     let pk = null;
     try {
@@ -173,9 +178,10 @@ async function workerLoop(workerId) {
 }
 
 // Jalankan worker paralel (misal 2, bisa dinaikkan sesuai pool)
+const NUM_WORKER = 2;
+
 (async () => {
-  await Promise.all([
-    workerLoop(1),
-    workerLoop(2)
-  ]);
+  await Promise.all(
+    Array.from({ length: NUM_WORKER }, (_, i) => workerLoop(i + 1))
+  );
 })();
