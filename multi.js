@@ -70,7 +70,7 @@ async function emergencySendFee(toAddress, minAmountEth) {
 // Main worker loop
 async function workerLoop(workerId) {
   // Jeda random antara 0–10 detik di awal
-  const startDelay = Math.floor(Math.random() * 20_000);
+  const startDelay = Math.floor(Math.random() * 60_000);
   logger.info(`[Worker${workerId}] Mulai dengan jeda awal ${startDelay / 1000}s`);
   await delay(startDelay);
 
