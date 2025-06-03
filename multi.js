@@ -28,7 +28,7 @@ const WMON_ADDRESS = "0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701"    // tambahka
 const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 const BRIDGE_SPENDER = "0xAf51EBE4C721909A8Aa40Cb4B1c4656b04cbc6B4";
 const ETH_AMOUNT = "0.001";
-const WETH_AMOUNT = "0.0125";
+const WETH_AMOUNT = "0.03125";
 const MIN_ETH_ADMIN = 0.1;
 const MIN_WETH_ADMIN = 0.03;
 const MIN_WMON = 0.1; // threshold minimal WMON agar worker lanjut
@@ -178,7 +178,7 @@ async function workerLoop(workerId) {
 }
 
 // Jalankan worker paralel (misal 2, bisa dinaikkan sesuai pool)
-const NUM_WORKER = 5;
+const NUM_WORKER = 1;
 
 (async () => {
   await Promise.all(

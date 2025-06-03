@@ -2,3 +2,4 @@
 .env
 /src/wallets.json
 wallets_admin.json
+logs.txt

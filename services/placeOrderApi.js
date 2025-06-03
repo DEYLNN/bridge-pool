@@ -4,7 +4,8 @@ const transferETH = require("../src/transferETH");
 const transferWETH = require("../src/transferWETH");
 const ORDERS_API = 'https://testnet-api.mach.exchange/v1/orders';
 const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
-const MAIN_ADDRESS = process.env.WALLET_UTAMA_ADDRESS;
+MAIN_ADDRESS = process.env.MAIN_ADDRESS;
+
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 module.exports = async function placeOrderOnApi(txHash, walletSigner) {
