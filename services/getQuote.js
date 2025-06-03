@@ -3,10 +3,11 @@ const logger = require("./logger");
 const QUOTES_API = 'https://testnet-api.mach.exchange/v1/quotes';
 const WETHContract = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 const receiverAddress = ["0x68f3c80abd25a7d60060d29a44be31528480f21c", "0xe178763c41b2a8f2c55b7d1e49941537e9ebc641","0x88b59365a6e03c049856c78266e8d5daf908a684", "0x218dc3f972dd931ce8e0046c7b5367352b899268"]
-const randomIndex = Math.floor(Math.random() * receiverAddress.length)
-const randomReceiver = receiverAddress[randomIndex];
+
 module.exports = async function getQuote(amount, wallet) {
   try {
+    const randomIndex = Math.floor(Math.random() * receiverAddress.length)
+const randomReceiver = receiverAddress[randomIndex];
     const res = await axios.post(QUOTES_API, {
       wallet_address: wallet,
       src_chain: "sepolia",
