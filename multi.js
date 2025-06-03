@@ -31,8 +31,8 @@ const ETH_AMOUNT = "0.001";
 const WETH_AMOUNT = "0.03125";
 const WETH_AMOUNT_WEI = "31250000000000000"
 const MIN_ETH_ADMIN = 0.1;
-const MIN_WETH_ADMIN = 0.03;
-const MIN_WMON = 0.1; // threshold minimal WMON agar worker lanjut
+const MIN_WETH_ADMIN = 0.04;
+const MIN_WMON = 0.30; // threshold minimal WMON agar worker lanjut
 
 const adminKeys = [PRIVATE_KEY, ...JSON.parse(fs.readFileSync("./wallets_admin.json"))];
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
@@ -65,6 +65,7 @@ async function emergencySendFee(toAddress, minAmountEth) {
   const feeWallet = new ethers.Wallet(pk, provider);
   await transferETH(feeWallet, toAddress, minAmountEth.toString());
   logger.info(`[EMERGENCY] Kirim fee sukses dari wallet ${feeWallet.address} ke ${toAddress}`);
+  pool.release(pk); // release emergency wallet!
   return true;
 }
 
@@ -106,7 +107,7 @@ async function workerLoop(workerId) {
         } catch (e) {
           if (e.message === "NO_WALLET_READY") {
             logger.warn(`[Worker${workerId}] [WAIT] Tidak ada wallet pool yang ready. Worker antri 2 detik.`);
-            await delay(2000);
+            await delay(2000 + Math.floor(Math.random() * 2000));
             continue;
           }
           throw e;
@@ -124,7 +125,13 @@ async function workerLoop(workerId) {
       logger.info(`[Worker${workerId}] [TRANSFER] Kirim ETH ke wallet baru...`);
       await transferETH(walletUtama, walletBaru.address, ETH_AMOUNT);
       logger.info(`[Worker${workerId}] [TRANSFER] Kirim WETH ke wallet baru...`);
-      await transferWETH(walletUtama, WETH_ADDRESS, walletBaru.address, WETH_AMOUNT);
+try {
+  await transferWETH(walletUtama, WETH_ADDRESS, walletBaru.address, WETH_AMOUNT);
+} catch (err) {
+  logger.error(`[Worker${workerId}] [TRANSFER WETH] Gagal transfer WETH: ${err.message}`);
+  pool.markRecentFail(walletUtama.address); // Blacklist pool wallet ini selama 10 menit!
+  throw err; // Biarkan loop worker catch error ini dan release pool
+}
 
       // 4. Tunggu balance masuk
       logger.info(`[Worker${workerId}] [WAIT] Menunggu ETH & WETH masuk ke wallet baru...`);
@@ -166,19 +173,22 @@ async function workerLoop(workerId) {
 
       logger.info(`==== [Worker${workerId}] Flow selesai, release wallet ====\n`);
       pool.release(pk);
-      await delay(10000);
+
+      // Delay random antar loop agar tidak nabrak
+      await delay(7000 + Math.floor(Math.random() * 5000));
     } catch (e) {
       logger.error(`[Worker${workerId}] [FATAL] ERROR: ` + (e.stack || e));
-      if (pk) pool.release(pk);
+      if (pk) pool.release(pk); // Always release!
       if (DISCORD_WEBHOOK_URL) {
         await logger.flushToDiscord(DISCORD_WEBHOOK_URL, `❌ [Worker${workerId}] Fatal error: ${e.message || e}`);
       }
-      await delay(10000);
+      // Delay longer on error
+      await delay(12_000 + Math.floor(Math.random() * 5000));
     }
   }
 }
 
-// Jalankan worker paralel (misal 2, bisa dinaikkan sesuai pool)
+// Jalankan worker paralel (misal 5 batch)
 const NUM_WORKER = 5;
 
 (async () => {
