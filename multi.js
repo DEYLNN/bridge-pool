@@ -29,6 +29,7 @@ const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 const BRIDGE_SPENDER = "0xAf51EBE4C721909A8Aa40Cb4B1c4656b04cbc6B4";
 const ETH_AMOUNT = "0.001";
 const WETH_AMOUNT = "0.03125";
+const WETH_AMOUNT_WEI = "31250000000000000"
 const MIN_ETH_ADMIN = 0.1;
 const MIN_WETH_ADMIN = 0.03;
 const MIN_WMON = 0.1; // threshold minimal WMON agar worker lanjut
@@ -131,11 +132,11 @@ async function workerLoop(workerId) {
 
       // 5. Approve
       logger.info(`[Worker${workerId}] [APPROVE] Approve WETH ke bridge spender...`);
-      await approveWETH(walletBaru, WETH_ADDRESS, BRIDGE_SPENDER, "12500000000000000");
+      await approveWETH(walletBaru, WETH_ADDRESS, BRIDGE_SPENDER, WETH_AMOUNT_WEI);
 
       // 6. Get quote & bridge TX
       logger.info(`[Worker${workerId}] [QUOTE] Get quote bridging...`);
-      const orderData = await getQuote("12500000000000000", walletBaru.address);
+      const orderData = await getQuote(WETH_AMOUNT_WEI, walletBaru.address);
 
       logger.info(`[Worker${workerId}] [BRIDGE] Kirim TX bridge...`);
       let txHash;
